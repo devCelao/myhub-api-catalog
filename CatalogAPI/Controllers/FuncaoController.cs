@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CatalogAPI.Controllers;
-//[Authorize]
+[Authorize]
 [Route("Catalogo/Funcao")]
 public class FuncaoController(ICatalogService service) : RootController
 {
