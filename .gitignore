@@ -2,4 +2,4 @@
 .vs/*
 */bin/*
 */obj/*
-CatalogAPI/appsettings.Development.json
+*/appsettings.Development.json
