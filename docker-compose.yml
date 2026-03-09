@@ -1,0 +1,35 @@
+networks:
+  production:
+    external: true
+    name: production
+  databases:
+    external: true
+    name: databases
+  messaging:
+    external: true
+    name: messaging
+
+services:
+  api-catalogo:
+    build:
+      context: ..
+      dockerfile: myhub-api-catalog/CatalogAPI/Dockerfile
+    container_name: api-catalogo
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Connection__ConnectionString=Server=mysql;Port=3306;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD}
+      - Connection__Schema=${DB_SCHEMA:-SaaS}
+      - MessageQueueConnection__MessageBus=host=rabbitmq;port=5672;username=${RABBITMQ_USER};password=${RABBITMQ_PASSWORD}
+      - Jwt__Audience=localhost
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api-catalogo.rule=Host(`api-catalogo.localhost`)
+      - traefik.http.routers.api-catalogo.entrypoints=web
+      - traefik.http.services.api-catalogo.loadbalancer.server.port=8080
+    networks:
+      - production
+      - databases
+      - messaging

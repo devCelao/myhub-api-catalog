@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\myhub-api-all-components\IntegrationHandlers\IntegrationHandlers.csproj" />
+    <ProjectReference Include="..\..\myhub-api-all-components\MessageBus\MessageBus.csproj" />
+    <ProjectReference Include="..\CatalogDomain\CatalogDomain.csproj" />
+    <ProjectReference Include="..\CatalogInfrastructure\CatalogInfrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
