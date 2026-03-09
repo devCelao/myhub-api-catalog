@@ -5,7 +5,7 @@ using MicroserviceCore.Controller;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CatalogAPI.Controllers;
-[Authorize]
+//[Authorize]
 [Route("Catalogo/Servico")]
 public class ServicoController(ICatalogService service) : RootController
 {

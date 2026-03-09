@@ -44,7 +44,7 @@ var infoApi = new OpenApiInfo
 builder.Services.AddSwaggerConfiguration(infoApi);
 
 // ========== Autenticação JWT com JWKS (API Consumer) ==========
-builder.Services.AddJwtAuthenticationConsumer(builder.Configuration);
+//builder.Services.AddJwtAuthenticationConsumer(builder.Configuration);
 
 // ========== MessageBus para comunicação com AuthAPI ==========
 builder.Services.AddMessageBusRequest(builder.Configuration);
@@ -63,7 +63,7 @@ app.UseCustomCors();
 app.UseHttpsRedirection();
 
 // Autenticação com refresh automático de token via cookie
-app.UseAuthenticationWithTokenRefresh();
+//app.UseAuthenticationWithTokenRefresh();
 
 app.MapControllers();
 
