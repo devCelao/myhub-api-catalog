@@ -37,7 +37,7 @@ COPY myhub-api-catalog/ ./myhub-api-catalog/
 
 # Build
 WORKDIR /src/myhub-api-catalog/CatalogAPI
-RUN dotnet publish -c ${BUILD_CONFIGURATION} -o /app/publish /p:UseAppHost=false
+RUN dotnet publish CatalogAPI.csproj -c ${BUILD_CONFIGURATION} -o /app/publish /p:UseAppHost=false
 
 ######## FINAL ########
 FROM runtime AS final
