@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using CatalogApplication.Services;
 using CatalogDomain.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using MicroserviceCore.Controller;
 
 namespace CatalogAPI.Controllers;
 

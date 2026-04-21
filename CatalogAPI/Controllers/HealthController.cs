@@ -1,5 +1,6 @@
 ﻿using CatalogInfrastructure.Context;
 using MessageBus.Interfaces;
+using MicroserviceCore.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;

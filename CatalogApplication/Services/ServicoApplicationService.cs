@@ -1,7 +1,7 @@
-using CatalogApplication.Common;
 using CatalogDomain.Dtos;
 using CatalogDomain.Entities;
 using CatalogInfrastructure.Repositories;
+using MicroserviceCore.Respostas;
 
 namespace CatalogApplication.Services;
 
