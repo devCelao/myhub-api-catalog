@@ -1,74 +1,105 @@
 using Microsoft.AspNetCore.Mvc;
 using CatalogApplication.Services;
 using CatalogDomain.Dtos;
-using MicroserviceCore.Controller;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CatalogAPI.Controllers;
+
 [Authorize]
-[Route("Catalogo/Servico")]
-public class ServicoController(ICatalogService service) : RootController
+[Route("api/catalogo/servicos")]
+public class ServicoController(
+    IServicoApplicationService servicoService,
+    IPlanoServicoApplicationService planoServicoService) : BaseController
 {
-    private readonly ICatalogService service = service;
+    private readonly IServicoApplicationService _servicoService = servicoService;
+    private readonly IPlanoServicoApplicationService _planoServicoService = planoServicoService;
 
     /// <summary>
-    /// Obter todos os serviços
+    /// Obter todos os servicos
     /// </summary>
+    [AllowAnonymous]
     [HttpGet]
+    [ProducesResponseType(typeof(List<ServicoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListarServicos()
     {
-        var result = await service.ListarServicosAsync();
-
-        return CustomResponde(result);
+        var result = await _servicoService.ListarServicosAsync();
+        return ToActionResult(result);
     }
+
     /// <summary>
-    /// Obter serviço por código
+    /// Obter servico por codigo
     /// </summary>
+    [AllowAnonymous]
     [HttpGet("{codServico}")]
+    [ProducesResponseType(typeof(ServicoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterServico(string codServico)
     {
-        if(codServico is null)
-            return ErrorResponse([new("process_error", "Código do serviço obrigatório!")], 503);
-
-        var result = await service.ObterServicoAsync(codServico);
-
-        return CustomResponde(result);
+        var result = await _servicoService.ObterServicoAsync(codServico);
+        return ToActionResult(result);
     }
+
     /// <summary>
-    /// Criar novo serviço
+    /// Criar novo servico
     /// </summary>
     [HttpPost]
+    [ProducesResponseType(typeof(ServicoDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CriarServico([FromBody] ServicoRequest request)
     {
-        if (!ModelState.IsValid) return FromModelState(ModelState);
+        if (!ModelState.IsValid) return ValidationError();
 
-        var result = await service.CriarServicoAsync(request);
-
-        return CustomResponde(result);
+        var result = await _servicoService.CriarServicoAsync(request);
+        return CreatedResult(result, nameof(ObterServico), new { codServico = request.CodServico });
     }
+
     /// <summary>
-    /// Atualizar serviço
+    /// Atualizar servico existente
     /// </summary>
-    [HttpPut]
-    public async Task<IActionResult> AtualizarServico([FromBody] ServicoRequest request)
+    [HttpPut("{codServico}")]
+    [ProducesResponseType(typeof(ServicoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AtualizarServico(string codServico, [FromBody] ServicoRequest request)
     {
-        if (!ModelState.IsValid) return FromModelState(ModelState);
+        if (!ModelState.IsValid) return ValidationError();
 
-        var result = await service.AtualizarServicoAsync(request);
+        if (request.CodServico != codServico)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Codigo do servico na URL n�o corresponde ao codigo no corpo da requisicao.",
+                errors = new[] { "Codigo do servico na URL n�o corresponde ao codigo no corpo da requisicao." }
+            });
+        }
 
-        return CustomResponde(result);
+        var result = await _servicoService.AtualizarServicoAsync(request);
+        return ToActionResult(result);
     }
+
     /// <summary>
-    /// Excluir serviço
+    /// Excluir servico
     /// </summary>
     [HttpDelete("{codServico}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ExcluirServico(string codServico)
     {
-        if (codServico is null)
-            return ErrorResponse([new("process_error", "Código do serviço obrigatório!")], 503);
+        var result = await _servicoService.ExcluirServicoAsync(codServico);
+        return NoContentResult(result);
+    }
 
-        var result = await service.ExcluirServicoAsync(codServico);
-
-        return CustomResponde(result);
+    /// <summary>
+    /// Obter planos que possuem este servico
+    /// </summary>
+    [AllowAnonymous]
+    [HttpGet("{codServico}/planos")]
+    [ProducesResponseType(typeof(List<PlanoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterPlanosDoServico(string codServico)
+    {
+        var result = await _planoServicoService.ListarPlanosDoServicoAsync(codServico);
+        return ToActionResult(result);
     }
 }

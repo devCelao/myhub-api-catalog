@@ -1,75 +1,151 @@
 using Microsoft.AspNetCore.Mvc;
 using CatalogApplication.Services;
 using CatalogDomain.Dtos;
-using MicroserviceCore.Controller;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CatalogAPI.Controllers;
+
 [Authorize]
-[Route("Catalogo/Plano")]
-public class PlanoController(ICatalogService service) : RootController
+[Route("api/catalogo/planos")]
+public class PlanoController(
+    IPlanoApplicationService planoService,
+    IPlanoServicoApplicationService planoServicoService) : BaseController
 {
-    private readonly ICatalogService service = service;
+    private readonly IPlanoApplicationService _planoService = planoService;
+    private readonly IPlanoServicoApplicationService _planoServicoService = planoServicoService;
 
     /// <summary>
     /// Obter todos os planos
     /// </summary>
+    [AllowAnonymous]
     [HttpGet]
-    //[AllowAnonymous]
+    [ProducesResponseType(typeof(List<PlanoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListarPlanos()
     {
-        var result = await service.ListarPlanosAsync();
-
-        return CustomResponde(result);
+        var result = await _planoService.ListarPlanosAsync();
+        return ToActionResult(result);
     }
+
     /// <summary>
-    /// Obter plano por c贸digo
+    /// Obter apenas planos ativos
     /// </summary>
+    [AllowAnonymous]
+    [HttpGet("ativos")]
+    [ProducesResponseType(typeof(List<PlanoDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListarPlanosAtivos()
+    {
+        var result = await _planoService.ListarPlanosAtivosAsync();
+        return ToActionResult(result);
+    }
+
+    /// <summary>
+    /// Obter plano por codigo
+    /// </summary>
+    [AllowAnonymous]
     [HttpGet("{codPlano}")]
+    [ProducesResponseType(typeof(PlanoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterPlano(string codPlano)
     {
-        if (codPlano is null)
-            return ErrorResponse([new("process_error", "C贸digo do plano obrigat贸rio!")], 503);
-
-        var result = await service.ObterPlanoAsync(codPlano);
-
-        return CustomResponde(result);
+        var result = await _planoService.ObterPlanoAsync(codPlano);
+        return ToActionResult(result);
     }
+
     /// <summary>
     /// Criar novo plano
     /// </summary>
     [HttpPost]
+    [ProducesResponseType(typeof(PlanoDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CriarPlano([FromBody] PlanoRequest request)
     {
-        if (!ModelState.IsValid) return FromModelState(ModelState);
+        if (!ModelState.IsValid) return ValidationError();
 
-        var result = await service.CriarPlanoAsync(request);
-
-        return CustomResponde(result);
+        var result = await _planoService.CriarPlanoAsync(request);
+        return CreatedResult(result, nameof(ObterPlano), new { codPlano = request.CodPlano });
     }
+
     /// <summary>
-    /// Atualizar plano
+    /// Atualizar plano existente
     /// </summary>
-    [HttpPut]
-    public async Task<IActionResult> AtualizarPlano([FromBody] PlanoRequest request)
+    [HttpPut("{codPlano}")]
+    [ProducesResponseType(typeof(PlanoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AtualizarPlano(
+        string codPlano,
+        [FromBody] PlanoRequest request)
     {
-        if (!ModelState.IsValid) return FromModelState(ModelState);
+        if (!ModelState.IsValid) return ValidationError();
 
-        var result = await service.AtualizarPlanoAsync(request);
+        if (request.CodPlano != codPlano)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Codigo do plano na URL n鉶 corresponde ao codigo no corpo da requisicao.",
+                errors = new[] { "Codigo do plano na URL n鉶 corresponde ao codigo no corpo da requisicao." }
+            });
+        }
 
-        return CustomResponde(result);
+        var result = await _planoService.AtualizarPlanoAsync(request);
+        return ToActionResult(result);
     }
+
     /// <summary>
     /// Excluir plano
     /// </summary>
     [HttpDelete("{codPlano}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> ExcluirPlano(string codPlano)
     {
-        if (codPlano is null)
-            return ErrorResponse([new("process_error", "C贸digo do plano obrigat贸rio!")], 503);
+        var result = await _planoService.ExcluirPlanoAsync(codPlano);
+        return NoContentResult(result);
+    }
 
-        var result = await service.ExcluirPlanoAsync(codPlano);
+    /// <summary>
+    /// Obter servicos de um plano
+    /// </summary>
+    [AllowAnonymous]
+    [HttpGet("{codPlano}/servicos")]
+    [ProducesResponseType(typeof(List<ServicoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterServicosDoPlano(string codPlano)
+    {
+        var result = await _planoServicoService.ListarServicosDoPlanoAsync(codPlano);
+        return ToActionResult(result);
+    }
 
-        return CustomResponde(result);
+    /// <summary>
+    /// Vincular servicos a um plano
+    /// </summary>
+    [HttpPut("{codPlano}/servicos")]
+    [ProducesResponseType(typeof(PlanoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> VincularServicosAoPlano(
+        string codPlano,
+        [FromBody] List<string> codServicos)
+    {
+        if (codServicos == null || codServicos.Count == 0)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Lista de servicos n鉶 pode ser vazia.",
+                errors = new[] { "Lista de servicos n鉶 pode ser vazia." }
+            });
+        }
+
+        var request = new PlanoServicosRequest
+        {
+            CodPlano = codPlano,
+            CodServicos = codServicos
+        };
+
+        var result = await _planoServicoService.VincularServicosAoPlanoAsync(request);
+        return ToActionResult(result);
     }
 }

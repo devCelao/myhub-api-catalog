@@ -4,12 +4,8 @@ namespace CatalogDomain.Dtos;
 
 public class PlanoServicosRequest
 {
-    [Required(ErrorMessage = "Obrigatório informar código do serviço.")]
+    [Required(ErrorMessage = "Obrigatorio informar codigo do plano.")]
     public string CodPlano { get; set; } = default!;
 
     public List<string>? CodServicos { get; set; } = [];
-
-    public bool HasServices => CodServicos is not null && CodServicos.Count > 0;
 }
-
-

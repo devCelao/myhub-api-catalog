@@ -13,4 +13,5 @@
     <ProjectReference Include="..\CatalogInfrastructure\CatalogInfrastructure.csproj" />
   </ItemGroup>
 
+
 </Project>

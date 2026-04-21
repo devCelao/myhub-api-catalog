@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\myhub-api-all-components\DataTransferObjects\DataTransferObjects.csproj" />
     <ProjectReference Include="..\..\myhub-api-all-components\DomainCore\DomainObjects.csproj" />
     <ProjectReference Include="..\..\myhub-api-all-components\MicroserviceCore\MicroserviceCore.csproj" />
     <ProjectReference Include="..\CatalogDomain\CatalogDomain.csproj" />

@@ -1,70 +1,77 @@
 ﻿using CatalogApplication.Services;
 using CatalogDomain.Dtos;
-using MicroserviceCore.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CatalogAPI.Controllers;
-[Authorize]
-[Route("Catalogo/Funcao")]
-public class FuncaoController(ICatalogService service) : RootController
-{
-    private readonly ICatalogService service = service;
 
-    [HttpGet("Servico/{codServico}")]
+[Authorize]
+[Route("api/catalogo/servicos/{codServico}/funcoes")]
+public class FuncaoController(IFuncaoApplicationService funcaoService) : BaseController
+{
+    private readonly IFuncaoApplicationService _funcaoService = funcaoService;
+
+    /// <summary>
+    /// Listar funcoes de um servico
+    /// </summary>
+    [AllowAnonymous]
+    [HttpGet]
+    [ProducesResponseType(typeof(List<FuncaoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ListarFuncoesDoServico(string codServico)
     {
-        if (codServico is null)
-            return ErrorResponse([new("process_error", "Código do serviço obrigatório!")], 503);
-
-        var resultado = await service.ListarFuncoesDoServicoAsync(codServico);
-        return CustomResponde(resultado);
+        var result = await _funcaoService.ListarFuncoesDoServicoAsync(codServico);
+        return ToActionResult(result);
     }
 
-    [HttpPost("Servico/{codServico}")]
+    /// <summary>
+    /// Criar funcao para um servico
+    /// </summary>
+    [HttpPost]
+    [ProducesResponseType(typeof(FuncaoDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CriarFuncao(string codServico, [FromBody] FuncaoRequest funcao)
     {
-        if (codServico is null)
-            return ErrorResponse([new("process_error", "Código do serviço obrigatório!")], 503);
+        if (!ModelState.IsValid) return ValidationError();
 
-        var resultado = await service.CriarFuncaoAsync(codServico, funcao);
-        return CustomResponde(resultado);
+        var result = await _funcaoService.CriarFuncaoAsync(codServico, funcao);
+        return CreatedResult(result, nameof(ListarFuncoesDoServico), new { codServico });
     }
 
-    [HttpPut("Servico/{codServico}")]
-    public async Task<IActionResult> AtualizarFuncao(string codServico, [FromBody] FuncaoRequest funcao)
+    /// <summary>
+    /// Atualizar funcao de um servico
+    /// </summary>
+    [HttpPut("{codFuncao}")]
+    [ProducesResponseType(typeof(FuncaoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AtualizarFuncao(string codServico, string codFuncao, [FromBody] FuncaoRequest funcao)
     {
-        if (codServico is null)
-            return ErrorResponse([new("process_error", "Código do serviço obrigatório!")], 503);
+        if (!ModelState.IsValid) return ValidationError();
 
-        var resultado = await service.AtualizarFuncaoAsync(codServico, funcao);
-        return CustomResponde(resultado);
+        if (funcao.CodFuncao != codFuncao)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Codigo da funcao na URL não corresponde ao codigo no corpo da requisicao.",
+                errors = new[] { "Codigo da funcao na URL não corresponde ao codigo no corpo da requisicao." }
+            });
+        }
+
+        var result = await _funcaoService.AtualizarFuncaoAsync(codServico, funcao);
+        return ToActionResult(result);
     }
 
-    [HttpDelete("Servico/{codServico}/{codFuncao}")]
+    /// <summary>
+    /// Remover funcao de um servico
+    /// </summary>
+    [HttpDelete("{codFuncao}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoverFuncao(string codServico, string codFuncao)
     {
-        if (codServico is null)
-            return ErrorResponse([new("process_error", "Código do serviço obrigatório!")], 503);
-
-        if (codFuncao is null)
-            return ErrorResponse([new("process_error", "Código da função obrigatório!")], 503);
-
-        var resultado = await service.ExcluirFuncaoAsync(codServico, codFuncao);
-        return CustomResponde(resultado);
+        var result = await _funcaoService.ExcluirFuncaoAsync(codServico, codFuncao);
+        return NoContentResult(result);
     }
-
-    [HttpPut("Servico/{codServico}/Reordenar")]
-    public async Task<IActionResult> Reordenar(string codServico, [FromBody] FuncaoRequest[] funcoes)
-    {
-        if (codServico is null)
-            return ErrorResponse([new("process_error", "Código do serviço obrigatório!")], 503);
-
-        if (funcoes == null || funcoes.Length == 0)
-            return ErrorResponse([new("process_error", "Lista de funções não pode estar vazia!")], 503);
-
-        var resultado = await service.ReordenarFuncoesAsync(codServico, funcoes);
-        return CustomResponde(resultado);
-    }
-
 }
