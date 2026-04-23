@@ -52,11 +52,11 @@ public class FuncaoController(IFuncaoApplicationService funcaoService) : BaseCon
 
         if (funcao.CodFuncao != codFuncao)
         {
-            return BadRequest(new
+            return BadRequest(new ApiResponse<FuncaoDto>
             {
-                success = false,
-                message = "Codigo da funcao na URL não corresponde ao codigo no corpo da requisicao.",
-                errors = new[] { "Codigo da funcao na URL não corresponde ao codigo no corpo da requisicao." }
+                Success = false,
+                Message = "Codigo da funcao na URL não corresponde ao codigo no corpo da requisicao.",
+                Errors = [new ApiError("VALIDATION", "Codigo da funcao na URL não corresponde ao codigo no corpo da requisicao.")]
             });
         }
 

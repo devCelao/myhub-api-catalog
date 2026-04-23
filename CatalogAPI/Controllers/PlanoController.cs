@@ -81,11 +81,11 @@ public class PlanoController(
 
         if (request.CodPlano != codPlano)
         {
-            return BadRequest(new
+            return BadRequest(new ApiResponse<PlanoDto>
             {
-                success = false,
-                message = "Codigo do plano na URL n„o corresponde ao codigo no corpo da requisicao.",
-                errors = new[] { "Codigo do plano na URL n„o corresponde ao codigo no corpo da requisicao." }
+                Success = false,
+                Message = "Codigo do plano na URL n√£o corresponde ao codigo no corpo da requisicao.",
+                Errors = [new ApiError("VALIDATION", "Codigo do plano na URL n√£o corresponde ao codigo no corpo da requisicao.")]
             });
         }
 
@@ -132,11 +132,11 @@ public class PlanoController(
     {
         if (codServicos == null || codServicos.Count == 0)
         {
-            return BadRequest(new
+            return BadRequest(new ApiResponse<PlanoDto>
             {
-                success = false,
-                message = "Lista de servicos n„o pode ser vazia.",
-                errors = new[] { "Lista de servicos n„o pode ser vazia." }
+                Success = false,
+                Message = "Lista de servicos n√£o pode ser vazia.",
+                Errors = [new ApiError("VALIDATION", "Lista de servicos n√£o pode ser vazia.")]
             });
         }
 

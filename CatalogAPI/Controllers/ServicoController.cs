@@ -67,11 +67,11 @@ public class ServicoController(
 
         if (request.CodServico != codServico)
         {
-            return BadRequest(new
+            return BadRequest(new ApiResponse<ServicoDto>
             {
-                success = false,
-                message = "Codigo do servico na URL n„o corresponde ao codigo no corpo da requisicao.",
-                errors = new[] { "Codigo do servico na URL n„o corresponde ao codigo no corpo da requisicao." }
+                Success = false,
+                Message = "Codigo do servico na URL n√£o corresponde ao codigo no corpo da requisicao.",
+                Errors = [new ApiError("VALIDATION", "Codigo do servico na URL n√£o corresponde ao codigo no corpo da requisicao.")]
             });
         }
 
