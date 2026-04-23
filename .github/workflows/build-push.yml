@@ -62,8 +62,35 @@ jobs:
       - name: Build
         run: dotnet build myhub-api-catalog/api-catalog.sln -c Release --no-restore
 
-      - name: Test
-        run: dotnet test myhub-api-catalog/CatalogTest/CatalogTest.csproj -c Release --no-build --verbosity normal
+      - name: Test com Coverage
+        run: |
+          dotnet test myhub-api-catalog/CatalogTest/CatalogTest.csproj \
+            -c Release --no-build --verbosity normal \
+            --collect:"XPlat Code Coverage" \
+            --settings myhub-api-catalog/coverlet.runsettings \
+            --results-directory myhub-api-catalog/TestResults
+
+      - name: Gerar relatorio de Coverage
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator \
+            "-reports:myhub-api-catalog/TestResults/**/coverage.cobertura.xml" \
+            "-targetdir:myhub-api-catalog/CoverageReport" \
+            "-reporttypes:HtmlInline_AzurePipelines;TextSummary"
+
+      - name: Publicar resumo de Coverage
+        run: |
+          cat myhub-api-catalog/CoverageReport/Summary.txt
+          echo "## Relatorio de Code Coverage" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat myhub-api-catalog/CoverageReport/Summary.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload relatorio de Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: myhub-api-catalog/CoverageReport/
 
   # ════════════════════════════════════════════════════════════════════════
   # JOB 3 - Build e Push para Docker Hub

@@ -3,3 +3,5 @@
 */bin/*
 */obj/*
 */appsettings.Development.json
+TestResults/
+CoverageReport/

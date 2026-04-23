@@ -13,3 +13,7 @@
 **/docker-compose*.yml
 **/.dockerignore
 **/Dockerfile
+**/TestResults/
+**/CoverageReport/
+**/coverlet.runsettings
+**/run-coverage.ps1
