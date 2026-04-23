@@ -70,7 +70,7 @@ public class PlanoTests
     }
 
     [Fact]
-    public void ChangeStatus_MesmoValor_NãoDeveRegistrarAtualizacao()
+    public void ChangeStatus_MesmoValor_NaoDeveRegistrarAtualizacao()
     {
         var plano = CriarPlanoValido();
 
@@ -114,7 +114,7 @@ public class PlanoTests
     }
 
     [Fact]
-    public void AddService_ServicoDuplicado_NãoDeveAdicionarNovamente()
+    public void AddService_ServicoDuplicado_NaoDeveAdicionarNovamente()
     {
         var plano = CriarPlanoValido();
         var ps1 = new PlanoServico { CodPlano = plano.CodPlano, CodServico = "SVC-001" };

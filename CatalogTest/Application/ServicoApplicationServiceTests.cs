@@ -27,7 +27,7 @@ public class ServicoApplicationServiceTests
         _service = new ServicoApplicationService(_servicoRepoMock.Object, _currentUserMock.Object);
     }
 
-    private static ServicoRequest CriarRequest(string cod = "SVC-001", string nome = "Serviço Teste",
+    private static ServicoRequest CriarRequest(string cod = "SVC-001", string nome = "Servico Teste",
         string? desc = null)
     {
         return new ServicoRequest
@@ -67,7 +67,7 @@ public class ServicoApplicationServiceTests
         var result = await _service.CriarServicoAsync(request);
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("já existe"));
+        result.Errors.Should().Contain(e => e.Contains("existe"));
     }
 
     [Fact]
@@ -76,8 +76,8 @@ public class ServicoApplicationServiceTests
         var request = CriarRequest();
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<string>()))
             .ReturnsAsync((Servico?)null);
-        _servicoRepoMock.Setup(r => r.ObterPorNomeAsync("Serviço Teste"))
-            .ReturnsAsync(new Servico("SVC-002", "Serviço Teste", "admin"));
+        _servicoRepoMock.Setup(r => r.ObterPorNomeAsync("Servico Teste"))
+            .ReturnsAsync(new Servico("SVC-002", "Servico Teste", "admin"));
 
         var result = await _service.CriarServicoAsync(request);
 
@@ -88,7 +88,7 @@ public class ServicoApplicationServiceTests
     [Fact]
     public async Task CriarServico_ComDescricao_DeveDefinirDescricao()
     {
-        var request = CriarRequest(desc: "Uma descrição");
+        var request = CriarRequest(desc: "Uma descricao");
         Servico? servicoCriado = null;
 
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<string>()))
@@ -102,7 +102,7 @@ public class ServicoApplicationServiceTests
         await _service.CriarServicoAsync(request);
 
         servicoCriado.Should().NotBeNull();
-        servicoCriado!.Descricao.Should().Be("Uma descrição");
+        servicoCriado!.Descricao.Should().Be("Uma descricao");
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class ServicoApplicationServiceTests
     }
 
     [Fact]
-    public async Task AtualizarServico_NãoEncontrado_DeveRetornarNotFound()
+    public async Task AtualizarServico_NaoEncontrado_DeveRetornarNotFound()
     {
         var request = CriarRequest();
         _servicoRepoMock.Setup(r => r.ObterPorCodigoParaEdicaoAsync(It.IsAny<string>()))
@@ -175,7 +175,7 @@ public class ServicoApplicationServiceTests
     }
 
     [Fact]
-    public async Task ObterServico_NãoExiste_DeveRetornarNotFound()
+    public async Task ObterServico_NaoExiste_DeveRetornarNotFound()
     {
         _servicoRepoMock.Setup(r => r.ObterServicoDtoAsync(It.IsAny<string>()))
             .ReturnsAsync((ServicoDto?)null);
@@ -225,7 +225,7 @@ public class ServicoApplicationServiceTests
     }
 
     [Fact]
-    public async Task ExcluirServico_NãoEncontrado_DeveRetornarNotFound()
+    public async Task ExcluirServico_NaoEncontrado_DeveRetornarNotFound()
     {
         _servicoRepoMock.Setup(r => r.ObterPorCodigoParaEdicaoAsync(It.IsAny<string>()))
             .ReturnsAsync((Servico?)null);

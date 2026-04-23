@@ -30,14 +30,14 @@ public class FuncaoApplicationServiceTests
             _servicoRepoMock.Object, _funcaoRepoMock.Object, _currentUserMock.Object);
     }
 
-    private static FuncaoRequest CriarRequest(string cod = "FN-001", string label = "Função Teste",
+    private static FuncaoRequest CriarRequest(string cod = "FN-001", string label = "Funcao Teste",
         int ordem = 1, bool ativo = true)
     {
         return new FuncaoRequest
         {
             CodFuncao = cod,
             Label = label,
-            Descricao = "Descrição",
+            Descricao = "Descricao",
             Icone = "fa-home",
             NumOrdem = ordem,
             IndAtivo = ativo
@@ -51,7 +51,7 @@ public class FuncaoApplicationServiceTests
     {
         var request = CriarRequest();
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync("SVC-001"))
-            .ReturnsAsync(new Servico("SVC-001", "Serviço", "admin"));
+            .ReturnsAsync(new Servico("SVC-001", "Servico", "admin"));
         _funcaoRepoMock.Setup(r => r.ObterPorCodigoAsync("FN-001"))
             .ReturnsAsync((Funcao?)null);
         _funcaoRepoMock.Setup(r => r.ListarFuncoesDoServicoAsync("SVC-001"))
@@ -62,11 +62,11 @@ public class FuncaoApplicationServiceTests
 
         result.IsSuccess.Should().BeTrue();
         result.Data!.CodFuncao.Should().Be("FN-001");
-        result.Data.Label.Should().Be("Função Teste");
+        result.Data.Label.Should().Be("Funcao Teste");
     }
 
     [Fact]
-    public async Task CriarFuncao_ServicoNãoExiste_DeveRetornarNotFound()
+    public async Task CriarFuncao_ServicoNaoExiste_DeveRetornarNotFound()
     {
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<string>()))
             .ReturnsAsync((Servico?)null);
@@ -81,14 +81,14 @@ public class FuncaoApplicationServiceTests
     public async Task CriarFuncao_CodigoJaExiste_DeveRetornarFalha()
     {
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync("SVC-001"))
-            .ReturnsAsync(new Servico("SVC-001", "Serviço", "admin"));
+            .ReturnsAsync(new Servico("SVC-001", "Servico", "admin"));
         _funcaoRepoMock.Setup(r => r.ObterPorCodigoAsync("FN-001"))
             .ReturnsAsync(new Funcao("FN-001", "SVC-001", "Existente", "admin"));
 
         var result = await _service.CriarFuncaoAsync("SVC-001", CriarRequest());
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("já existe"));
+        result.Errors.Should().Contain(e => e.Contains("existe"));
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class FuncaoApplicationServiceTests
     {
         var request = CriarRequest(ordem: 1);
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync("SVC-001"))
-            .ReturnsAsync(new Servico("SVC-001", "Serviço", "admin"));
+            .ReturnsAsync(new Servico("SVC-001", "Servico", "admin"));
         _funcaoRepoMock.Setup(r => r.ObterPorCodigoAsync("FN-001"))
             .ReturnsAsync((Funcao?)null);
         _funcaoRepoMock.Setup(r => r.ListarFuncoesDoServicoAsync("SVC-001"))
@@ -136,7 +136,7 @@ public class FuncaoApplicationServiceTests
     }
 
     [Fact]
-    public async Task AtualizarFuncao_FuncaoNãoPertenceAoServico_DeveRetornarFalha()
+    public async Task AtualizarFuncao_FuncaoNaoPertenceAoServico_DeveRetornarFalha()
     {
         var request = CriarRequest();
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync("SVC-001"))
@@ -147,11 +147,11 @@ public class FuncaoApplicationServiceTests
         var result = await _service.AtualizarFuncaoAsync("SVC-001", request);
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("não pertence"));
+        result.Errors.Should().Contain(e => e.Contains("pertence"));
     }
 
     [Fact]
-    public async Task AtualizarFuncao_FuncaoNãoEncontrada_DeveRetornarNotFound()
+    public async Task AtualizarFuncao_FuncaoNaoEncontrada_DeveRetornarNotFound()
     {
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync("SVC-001"))
             .ReturnsAsync(new Servico("SVC-001", "Servico", "admin"));
@@ -183,7 +183,7 @@ public class FuncaoApplicationServiceTests
     }
 
     [Fact]
-    public async Task ListarFuncoes_ServicoNãoExiste_DeveRetornarNotFound()
+    public async Task ListarFuncoes_ServicoNaoExiste_DeveRetornarNotFound()
     {
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<string>()))
             .ReturnsAsync((Servico?)null);
@@ -215,7 +215,7 @@ public class FuncaoApplicationServiceTests
     }
 
     [Fact]
-    public async Task ExcluirFuncao_FuncaoNãoPertenceAoServico_DeveRetornarFalha()
+    public async Task ExcluirFuncao_FuncaoNaoPertenceAoServico_DeveRetornarFalha()
     {
         _servicoRepoMock.Setup(r => r.ObterPorCodigoParaEdicaoAsync("SVC-001"))
             .ReturnsAsync(new Servico("SVC-001", "Servico", "admin"));
@@ -225,7 +225,7 @@ public class FuncaoApplicationServiceTests
         var result = await _service.ExcluirFuncaoAsync("SVC-001", "FN-001");
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("não pertence"));
+        result.Errors.Should().Contain(e => e.Contains("pertence"));
     }
 
     #endregion

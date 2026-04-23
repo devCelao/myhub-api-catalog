@@ -74,9 +74,9 @@ public class PlanoControllerTests : IClassFixture<CatalogApiFactory>
     }
 
     [Fact]
-    public async Task ObterPlano_NãoExistente_DeveRetornar404()
+    public async Task ObterPlano_NaoExistente_DeveRetornar404()
     {
-        _factory.SetupPlanoNãoExiste();
+        _factory.SetupPlanoNaoExiste();
 
         var response = await _client.GetAsync("/api/catalogo/planos/PLN-999");
 
@@ -90,7 +90,7 @@ public class PlanoControllerTests : IClassFixture<CatalogApiFactory>
     [Fact]
     public async Task CriarPlano_DadosValidos_DeveRetornar201()
     {
-        _factory.SetupPlanoNãoExiste();
+        _factory.SetupPlanoNaoExiste();
         _factory.PlanoRepoMock.Setup(r => r.ObterPlanoComServicosAsync(It.IsAny<CodigoPlano>()))
             .ReturnsAsync(new PlanoDto
             {
@@ -204,7 +204,7 @@ public class PlanoControllerTests : IClassFixture<CatalogApiFactory>
     }
 
     [Fact]
-    public async Task ExcluirPlano_NãoExistente_DeveRetornar404()
+    public async Task ExcluirPlano_NaoExistente_DeveRetornar404()
     {
         _factory.PlanoRepoMock.Setup(r => r.ObterPorCodigoParaEdicaoAsync(It.IsAny<CodigoPlano>()))
             .ReturnsAsync((Plano?)null);

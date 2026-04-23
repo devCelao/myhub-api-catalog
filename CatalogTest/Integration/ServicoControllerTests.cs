@@ -54,7 +54,7 @@ public class ServicoControllerTests : IClassFixture<CatalogApiFactory>
     }
 
     [Fact]
-    public async Task ObterServico_NãoExistente_DeveRetornar404()
+    public async Task ObterServico_NaoExistente_DeveRetornar404()
     {
         _factory.ServicoRepoMock.Setup(r => r.ObterServicoDtoAsync("SVC-999"))
             .ReturnsAsync((ServicoDto?)null);
@@ -153,7 +153,7 @@ public class ServicoControllerTests : IClassFixture<CatalogApiFactory>
     }
 
     [Fact]
-    public async Task ExcluirServico_NãoExistente_DeveRetornar404()
+    public async Task ExcluirServico_NaoExistente_DeveRetornar404()
     {
         _factory.ServicoRepoMock.Setup(r => r.ObterPorCodigoParaEdicaoAsync("SVC-999"))
             .ReturnsAsync((Servico?)null);

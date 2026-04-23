@@ -28,11 +28,11 @@ public class FuncaoApplicationService(
         {
             var servico = await _servicoRepository.ObterPorCodigoAsync(codServico);
             if (servico == null)
-                return ServiceResult<FuncaoDto>.NotFound($"Serviço {codServico} não encontrado.");
+                return ServiceResult<FuncaoDto>.NotFound($"Servico {codServico} nao encontrado.");
 
             var funcaoExistente = await _funcaoRepository.ObterPorCodigoAsync(request.CodFuncao);
             if (funcaoExistente != null)
-                return ServiceResult<FuncaoDto>.Failure($"Função {request.CodFuncao} já existe.");
+                return ServiceResult<FuncaoDto>.Failure($"Funcao {request.CodFuncao} ja existe.");
             var funcoesDoServico = await _funcaoRepository.ListarFuncoesDoServicoAsync(codServico);
             var ordensEmUso = funcoesDoServico.Select(f => f.NumOrdem).OrderBy(o => o).ToList();
 
@@ -56,7 +56,7 @@ public class FuncaoApplicationService(
             await _funcaoRepository.AdicionarAsync(funcao);
 
             if (!await _funcaoRepository.UnitOfWork.Commit())
-                return ServiceResult<FuncaoDto>.Failure("Erro ao criar função.");
+                return ServiceResult<FuncaoDto>.Failure("Erro ao criar funcao.");
 
             var funcaoDto = new FuncaoDto
             {
@@ -69,7 +69,7 @@ public class FuncaoApplicationService(
                 IndAtivo = funcao.IndAtivo
             };
 
-            return ServiceResult<FuncaoDto>.Success(funcaoDto, $"Função {request.Label} criada com sucesso.");
+            return ServiceResult<FuncaoDto>.Success(funcaoDto, $"Funcao {request.Label} criada com sucesso.");
         }
         catch (ArgumentException ex)
         {
@@ -77,7 +77,7 @@ public class FuncaoApplicationService(
         }
         catch (Exception)
         {
-            return ServiceResult<FuncaoDto>.Failure("Erro interno ao criar função.");
+            return ServiceResult<FuncaoDto>.Failure("Erro interno ao criar funcao.");
         }
     }
 
@@ -87,13 +87,13 @@ public class FuncaoApplicationService(
         {
             var servico = await _servicoRepository.ObterPorCodigoAsync(codServico);
             if (servico == null)
-                return ServiceResult<FuncaoDto>.NotFound($"Serviço {codServico} não encontrado.");
+                return ServiceResult<FuncaoDto>.NotFound($"Servico {codServico} nao encontrado.");
 
             var funcao = await _funcaoRepository.ObterPorCodigoParaEdicaoAsync(request.CodFuncao);
             if (funcao == null)
-                return ServiceResult<FuncaoDto>.NotFound($"Função {request.CodFuncao} não encontrada.");
+                return ServiceResult<FuncaoDto>.NotFound($"Funcao {request.CodFuncao} nao encontrada.");
             if (funcao.CodServico != codServico)
-                return ServiceResult<FuncaoDto>.Failure($"Função {request.CodFuncao} não pertence ao serviço {codServico}.");
+                return ServiceResult<FuncaoDto>.Failure($"Funcao {request.CodFuncao} nao pertence ao servico {codServico}.");
 
             var funcoesDoServico = await _funcaoRepository.ListarFuncoesDoServicoAsync(codServico);
             var ordensEmUso = funcoesDoServico
@@ -122,7 +122,7 @@ public class FuncaoApplicationService(
             _funcaoRepository.Atualizar(funcao);
 
             if (!await _funcaoRepository.UnitOfWork.Commit())
-                return ServiceResult<FuncaoDto>.Failure("Erro ao atualizar função.");
+                return ServiceResult<FuncaoDto>.Failure("Erro ao atualizar funcao.");
 
             var funcaoDto = new FuncaoDto
             {
@@ -135,7 +135,7 @@ public class FuncaoApplicationService(
                 IndAtivo = funcao.IndAtivo
             };
 
-            return ServiceResult<FuncaoDto>.Success(funcaoDto, $"Função {request.Label} atualizada com sucesso.");
+            return ServiceResult<FuncaoDto>.Success(funcaoDto, $"Funcao {request.Label} atualizada com sucesso.");
         }
         catch (ArgumentException ex)
         {
@@ -143,7 +143,7 @@ public class FuncaoApplicationService(
         }
         catch (Exception)
         {
-            return ServiceResult<FuncaoDto>.Failure("Erro interno ao atualizar função.");
+            return ServiceResult<FuncaoDto>.Failure("Erro interno ao atualizar funcao.");
         }
     }
 
@@ -151,7 +151,7 @@ public class FuncaoApplicationService(
     {
         var servico = await _servicoRepository.ObterPorCodigoAsync(codServico);
         if (servico == null)
-            return ServiceResult<List<FuncaoDto>>.NotFound($"Serviço {codServico} não encontrado.");
+            return ServiceResult<List<FuncaoDto>>.NotFound($"Servico {codServico} nao encontrado.");
 
         var funcoes = await _funcaoRepository.ListarFuncoesDoServicoAsync(codServico);
         return ServiceResult<List<FuncaoDto>>.Success(funcoes);
@@ -163,25 +163,25 @@ public class FuncaoApplicationService(
         {
             var servico = await _servicoRepository.ObterPorCodigoParaEdicaoAsync(codServico);
             if (servico == null)
-                return ServiceResult.NotFound($"Serviço {codServico} não encontrado.");
+                return ServiceResult.NotFound($"Servico {codServico} nao encontrado.");
 
             var funcao = await _funcaoRepository.ObterPorCodigoParaEdicaoAsync(codFuncao);
             if (funcao == null)
-                return ServiceResult.NotFound($"Função {codFuncao} não encontrada.");
+                return ServiceResult.NotFound($"Funcao {codFuncao} nao encontrada.");
             if (funcao.CodServico != codServico)
-                return ServiceResult.Failure($"Função {codFuncao} não pertence ao serviço {codServico}.");
+                return ServiceResult.Failure($"Funcao {codFuncao} nao pertence ao servico {codServico}.");
 
             _funcaoRepository.Remover(funcao);
             servico.RemoveFunction(funcao);
 
             if (!await _funcaoRepository.UnitOfWork.Commit())
-                return ServiceResult.Failure("Erro ao excluir função.");
+                return ServiceResult.Failure("Erro ao excluir funcao.");
 
-            return ServiceResult.Success($"Função {codFuncao} removida com sucesso.");
+            return ServiceResult.Success($"Funcao {codFuncao} removida com sucesso.");
         }
         catch (Exception)
         {
-            return ServiceResult.Failure("Erro interno ao excluir função.");
+            return ServiceResult.Failure("Erro interno ao excluir funcao.");
         }
     }
 }

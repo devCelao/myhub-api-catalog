@@ -55,7 +55,7 @@ public class PlanoServicoApplicationServiceTests
     }
 
     [Fact]
-    public async Task VincularServicos_PlanoNãoEncontrado_DeveRetornarNotFound()
+    public async Task VincularServicos_PlanoNaoEncontrado_DeveRetornarNotFound()
     {
         var request = new PlanoServicosRequest { CodPlano = "PLN-999", CodServicos = ["SVC-001"] };
         _planoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<CodigoPlano>()))
@@ -91,7 +91,7 @@ public class PlanoServicoApplicationServiceTests
     }
 
     [Fact]
-    public async Task VincularServicos_ServicoNãoExiste_DeveRetornarFalha()
+    public async Task VincularServicos_ServicoNaoExiste_DeveRetornarFalha()
     {
         var request = new PlanoServicosRequest { CodPlano = "PLN-001", CodServicos = ["SVC-INVALIDO"] };
         var plano = new Plano(new CodigoPlano("PLN-001"), "Teste", new Dinheiro(10), "admin");
@@ -133,7 +133,7 @@ public class PlanoServicoApplicationServiceTests
     }
 
     [Fact]
-    public async Task LimparServicos_PlanoNãoEncontrado_DeveRetornarNotFound()
+    public async Task LimparServicos_PlanoNaoEncontrado_DeveRetornarNotFound()
     {
         _planoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<CodigoPlano>()))
             .ReturnsAsync((Plano?)null);
@@ -182,7 +182,7 @@ public class PlanoServicoApplicationServiceTests
     }
 
     [Fact]
-    public async Task ListarPlanosDoServico_ServicoNãoExiste_DeveRetornarNotFound()
+    public async Task ListarPlanosDoServico_ServicoNaoExiste_DeveRetornarNotFound()
     {
         _servicoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<string>()))
             .ReturnsAsync((Servico?)null);

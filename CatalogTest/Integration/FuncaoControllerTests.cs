@@ -37,7 +37,7 @@ public class FuncaoControllerTests : IClassFixture<CatalogApiFactory>
     }
 
     [Fact]
-    public async Task ListarFuncoes_ServicoNãoExiste_DeveRetornar404()
+    public async Task ListarFuncoes_ServicoNaoExiste_DeveRetornar404()
     {
         _factory.ServicoRepoMock.Setup(r => r.ObterPorCodigoAsync("SVC-999"))
             .ReturnsAsync((Servico?)null);

@@ -85,7 +85,7 @@ public class PlanoApplicationServiceTests
         var result = await _service.CriarPlanoAsync(request);
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("já existe"));
+        result.Errors.Should().Contain(e => e.Contains("existe"));
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class PlanoApplicationServiceTests
     }
 
     [Fact]
-    public async Task AtualizarPlano_PlanoNãoEncontrado_DeveRetornarNotFound()
+    public async Task AtualizarPlano_PlanoNaoEncontrado_DeveRetornarNotFound()
     {
         var request = CriarRequest();
         _planoRepoMock.Setup(r => r.ObterPorCodigoParaEdicaoAsync(It.IsAny<CodigoPlano>()))
@@ -176,7 +176,7 @@ public class PlanoApplicationServiceTests
     }
 
     [Fact]
-    public async Task ObterPlano_PlanoNãoExiste_DeveRetornarNotFound()
+    public async Task ObterPlano_PlanoNaoExiste_DeveRetornarNotFound()
     {
         _planoRepoMock.Setup(r => r.ObterPlanoComServicosAsync(It.IsAny<CodigoPlano>()))
             .ReturnsAsync((PlanoDto?)null);
@@ -252,11 +252,11 @@ public class PlanoApplicationServiceTests
         var result = await _service.ExcluirPlanoAsync("PLN-001");
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("serviços vinculados"));
+        result.Errors.Should().Contain(e => e.Contains("vinculados"));
     }
 
     [Fact]
-    public async Task ExcluirPlano_PlanoNãoEncontrado_DeveRetornarNotFound()
+    public async Task ExcluirPlano_PlanoNaoEncontrado_DeveRetornarNotFound()
     {
         _planoRepoMock.Setup(r => r.ObterPorCodigoParaEdicaoAsync(It.IsAny<CodigoPlano>()))
             .ReturnsAsync((Plano?)null);

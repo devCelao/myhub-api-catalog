@@ -131,7 +131,7 @@ public class CatalogApiFactory : WebApplicationFactory<Program>
             .ReturnsAsync(dto);
     }
 
-    public void SetupPlanoNãoExiste()
+    public void SetupPlanoNaoExiste()
     {
         PlanoRepoMock.Setup(r => r.ObterPorCodigoAsync(It.IsAny<CodigoPlano>()))
             .ReturnsAsync((Plano?)null);
