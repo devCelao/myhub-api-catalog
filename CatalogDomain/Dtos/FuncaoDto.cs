@@ -29,7 +29,7 @@ public class FuncaoRequest
     [StringLength(100, ErrorMessage = "Icone deve ter no maximo 100 caracteres.")]
     public string? Icone { get; set; }
 
-    [Range(0, int.MaxValue, ErrorMessage = "Numero de ordem não pode ser negativo.")]
+    [Range(0, int.MaxValue, ErrorMessage = "Numero de ordem nao pode ser negativo.")]
     public int NumOrdem { get; set; }
 
     public bool IndAtivo { get; set; }
